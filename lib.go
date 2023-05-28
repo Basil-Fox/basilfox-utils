@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"github.com/FiberApps/core-service-utils/constant"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -9,7 +8,15 @@ import (
 func SendError(ctx *fiber.Ctx, err *fiber.Error) error {
 	return ctx.Status(err.Code).JSON(fiber.Map{
 		"Error":     err.Message,
-		"RequestID": ctx.Get(constant.REQUEST_ID),
+		"RequestID": ctx.Get(HeaderRequestId),
+	})
+}
+
+// XXX - Generic Error with Data
+func SendErrorWithData(ctx *fiber.Ctx, code int, data interface{}) error {
+	return ctx.Status(code).JSON(fiber.Map{
+		"Error":     data,
+		"RequestID": ctx.Get(HeaderRequestId),
 	})
 }
 
@@ -17,7 +24,7 @@ func SendError(ctx *fiber.Ctx, err *fiber.Error) error {
 func Success(ctx *fiber.Ctx, data interface{}) error {
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Data":      data,
-		"RequestID": ctx.Get(constant.REQUEST_ID),
+		"RequestID": ctx.Get(HeaderRequestId),
 	})
 }
 
@@ -25,7 +32,7 @@ func Success(ctx *fiber.Ctx, data interface{}) error {
 func InternalServerError(ctx *fiber.Ctx, err string) error {
 	return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 		"Error":     err,
-		"RequestID": ctx.Get(constant.REQUEST_ID),
+		"RequestID": ctx.Get(HeaderRequestId),
 	})
 }
 
@@ -33,7 +40,7 @@ func InternalServerError(ctx *fiber.Ctx, err string) error {
 func BadRequest(ctx *fiber.Ctx, err string) error {
 	return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 		"Error":     err,
-		"RequestID": ctx.Get(constant.REQUEST_ID),
+		"RequestID": ctx.Get(HeaderRequestId),
 	})
 }
 
@@ -41,7 +48,7 @@ func BadRequest(ctx *fiber.Ctx, err string) error {
 func Unauthorized(ctx *fiber.Ctx, err string) error {
 	return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 		"Error":     err,
-		"RequestID": ctx.Get(constant.REQUEST_ID),
+		"RequestID": ctx.Get(HeaderRequestId),
 	})
 }
 
@@ -49,6 +56,6 @@ func Unauthorized(ctx *fiber.Ctx, err string) error {
 func NotFound(ctx *fiber.Ctx, err string) error {
 	return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
 		"Error":     err,
-		"RequestID": ctx.Get(constant.REQUEST_ID),
+		"RequestID": ctx.Get(HeaderRequestId),
 	})
 }
