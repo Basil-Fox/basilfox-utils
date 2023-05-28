@@ -1,4 +1,4 @@
-package lib
+package constant
 
 const (
 	REQUEST_ID    = "X-REQUEST-ID"
