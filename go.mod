@@ -1,4 +1,4 @@
-module core-service-utils
+module github.com/FiberApps/core-service-utils
 
 go 1.20
 
