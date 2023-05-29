@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	core "github.com/FiberApps/core-service-utils"
+	"github.com/FiberApps/core/constant"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 )
@@ -9,16 +9,16 @@ import (
 func RequestID(c *fiber.Ctx) error {
 
 	// Get or Generate new UUID
-	id := c.Get(core.HeaderRequestId)
+	id := c.Get(constant.HeaderRequestId)
 	if id == "" {
 		id = utils.UUIDv4()
 	}
 
 	// Set RequestID to headers
-	c.Request().Header.Set(core.HeaderRequestId, id)
+	c.Request().Header.Set(constant.HeaderRequestId, id)
 
 	// Add the RequestID to locals
-	c.Locals(core.ContextRequestId, id)
+	c.Locals(constant.ContextRequestId, id)
 
 	return c.Next()
 }

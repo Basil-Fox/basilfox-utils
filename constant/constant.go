@@ -1,4 +1,4 @@
-package lib
+package constant
 
 const (
 	HeaderRequestId = "X-Request-ID"

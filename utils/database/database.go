@@ -1,17 +1,18 @@
-package lib
+package database
 
 import (
 	"context"
 	"log"
 	"time"
 
+	"github.com/FiberApps/core/utils/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
-	databaseURL  = Config("DATABASE_URI")
-	databaseName = Config("DATABASE_NAME")
+	databaseURL  = config.Config("DATABASE_URI")
+	databaseName = config.Config("DATABASE_NAME")
 	DB           mongo.Database
 )
 
