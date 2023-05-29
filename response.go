@@ -8,7 +8,7 @@ import (
 func SendError(ctx *fiber.Ctx, err *fiber.Error) error {
 	return ctx.Status(err.Code).JSON(fiber.Map{
 		"Error":     err.Message,
-		"RequestID": ctx.Get(fiber.HeaderXRequestID),
+		"RequestID": ctx.Get(HeaderRequestId),
 	})
 }
 
@@ -16,7 +16,7 @@ func SendError(ctx *fiber.Ctx, err *fiber.Error) error {
 func SendErrorWithData(ctx *fiber.Ctx, code int, data interface{}) error {
 	return ctx.Status(code).JSON(fiber.Map{
 		"Error":     data,
-		"RequestID": ctx.Get(fiber.HeaderXRequestID),
+		"RequestID": ctx.Get(HeaderRequestId),
 	})
 }
 
@@ -24,6 +24,6 @@ func SendErrorWithData(ctx *fiber.Ctx, code int, data interface{}) error {
 func Success(ctx *fiber.Ctx, data interface{}) error {
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Data":      data,
-		"RequestID": ctx.Get(fiber.HeaderXRequestID),
+		"RequestID": ctx.Get(HeaderRequestId),
 	})
 }
