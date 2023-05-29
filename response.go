@@ -13,7 +13,7 @@ func SendError(ctx *fiber.Ctx, err *fiber.Error) error {
 }
 
 // XXX - Error with Data
-func SendErrorWithData(ctx *fiber.Ctx, code int, data map[string]interface{}) error {
+func SendErrorWithData(ctx *fiber.Ctx, code int, data interface{}) error {
 	return ctx.Status(code).JSON(fiber.Map{
 		"Error":     data,
 		"RequestID": ctx.Get(fiber.HeaderXRequestID),
@@ -21,7 +21,7 @@ func SendErrorWithData(ctx *fiber.Ctx, code int, data map[string]interface{}) er
 }
 
 // 2XX - Success
-func Success(ctx *fiber.Ctx, data map[string]interface{}) error {
+func Success(ctx *fiber.Ctx, data interface{}) error {
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Data":      data,
 		"RequestID": ctx.Get(fiber.HeaderXRequestID),
