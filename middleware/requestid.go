@@ -8,8 +8,11 @@ import (
 
 func RequestID(c *fiber.Ctx) error {
 
-	// Generate new UUID
-	id := utils.UUIDv4()
+	// Get or Generate new UUID
+	id := c.Get(core.HeaderRequestId)
+	if id == "" {
+		id = utils.UUIDv4()
+	}
 
 	// Set RequestID to headers
 	c.Request().Header.Set(core.HeaderRequestId, id)
