@@ -3,16 +3,16 @@ package database
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
-	"github.com/FiberApps/core/utils/config"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
-	databaseURL  = config.Config("DATABASE_URI")
-	databaseName = config.Config("DATABASE_NAME")
+	databaseURL  = os.Getenv("DATABASE_URI")
+	databaseName = os.Getenv("DATABASE_NAME")
 	DB           mongo.Database
 )
 

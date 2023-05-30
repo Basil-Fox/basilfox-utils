@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/FiberApps/core/constant"
-	"github.com/FiberApps/core/utils/response"
+	"github.com/FiberApps/core/response"
 	"github.com/gofiber/fiber/v2"
 )
 
