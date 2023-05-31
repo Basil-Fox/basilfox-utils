@@ -3,21 +3,16 @@ package database
 import (
 	"context"
 	"log"
-	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var (
-	databaseURL  = os.Getenv("DATABASE_URI")
-	databaseName = os.Getenv("DATABASE_NAME")
-	DB           mongo.Database
-)
+var DB mongo.Database
 
-func ConnectToDatabase() {
-	client, err := mongo.NewClient(options.Client().ApplyURI(databaseURL))
+func Connect(url string, database string) {
+	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -27,7 +22,7 @@ func ConnectToDatabase() {
 		log.Fatal(err)
 	}
 
-	log.Printf("Connected to Database::[%s]", databaseName)
-	DB = *client.Database(databaseName)
+	log.Printf("Connected to Database::[%s]", database)
+	DB = *client.Database(database)
 	defer cancel()
 }
