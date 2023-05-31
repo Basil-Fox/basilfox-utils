@@ -4,6 +4,7 @@ import (
 	"github.com/FiberApps/core/constant"
 	"github.com/FiberApps/core/response"
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func ValidateHeaders(endpointType string) func(c *fiber.Ctx) error {
@@ -20,6 +21,12 @@ func ValidateHeaders(endpointType string) func(c *fiber.Ctx) error {
 		if endpointType == constant.EndpointPrivate || endpointType == constant.EndpointRefresh {
 			// Check UserID Header
 			if c.Get(constant.HeaderUserId) == "" {
+				return response.SendError(c, fiber.ErrUnauthorized)
+			}
+
+			// ObjectID validation
+			_, err := primitive.ObjectIDFromHex(c.Get(constant.HeaderUserId))
+			if err != nil {
 				return response.SendError(c, fiber.ErrUnauthorized)
 			}
 
