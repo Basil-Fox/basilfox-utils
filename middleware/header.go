@@ -19,6 +19,11 @@ func ValidateHeaders(isUserRequired bool) func(c *fiber.Ctx) error {
 			return response.SendError(c, fiber.ErrBadGateway)
 		}
 
+		// Check TokenID Header
+		if c.Get(constant.HeaderTokenId) == "" && isUserRequired {
+			return response.SendError(c, fiber.ErrBadGateway)
+		}
+
 		return c.Next()
 	}
 }
