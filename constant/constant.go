@@ -2,7 +2,11 @@ package constant
 
 const (
 	ContextJwtToken  = "jwt_token"
+	ContextNamespace = "namespace"
 	ContextRequestId = "request_id"
+	ContextTokenId   = "token_id"
+	ContextTokenKind = "token_kind"
+	ContextUserId    = "user_id"
 
 	EndpointPublic  = "Public"
 	EndpointPrivate = "Private"
