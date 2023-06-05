@@ -16,7 +16,6 @@ func Connect(uri string, user string, password string) {
 		Password: password,
 		DB:       0, // use default DB
 	})
-	defer Client.Close()
 
 	_, err := Client.Ping(context.Background()).Result()
 	if err != nil {
