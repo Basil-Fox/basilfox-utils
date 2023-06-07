@@ -8,7 +8,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func send(recipient string, subject string, bodyType string, body string) error {
+func Send(recipient string, subject string, bodyType string, body string) error {
 
 	var (
 		host     = os.Getenv("SMTP_HOST")
