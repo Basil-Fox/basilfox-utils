@@ -7,7 +7,7 @@ import (
 )
 
 // Consumer
-func CreateConsumer(brokersUrl []string) (sarama.Consumer, error) {
+func createConsumer(brokersUrl []string) (sarama.Consumer, error) {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 
