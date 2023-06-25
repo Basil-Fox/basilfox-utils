@@ -11,7 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-func UploadImage(fileBuffer *bytes.Buffer, fileName string, fileType string) (string, error) {
+func UploadFile(fileBuffer *bytes.Buffer, fileName string, fileType string) (string, error) {
 	var (
 		accessKeyID     = os.Getenv("S3_ACCESS_KEY")
 		secretAccessKey = os.Getenv("S3_SECRET_KEY")
