@@ -3,6 +3,8 @@ package logger
 import (
 	"context"
 	"fmt"
+	"os"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -11,6 +13,8 @@ import (
 type Logger struct{}
 
 func NewLogger() *Logger {
+	// Customize the log format
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339})
 	return &Logger{}
 }
 

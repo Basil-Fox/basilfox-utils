@@ -24,7 +24,7 @@ func Connect(url string, database string) {
 		log.Fatal(err)
 	}
 
-	log.Info(fmt.Printf("Connected to Database::[%s]", database))
+	log.Info(fmt.Sprintf("Connected to Database::[%s]", database))
 	DB = *client.Database(database)
 	defer cancel()
 }

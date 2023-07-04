@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/FiberApps/core/logger"
 	"github.com/redis/go-redis/v9"
@@ -23,5 +22,5 @@ func Connect(uri string, user string, password string) {
 	if err != nil {
 		panic(err)
 	}
-	log.Info(fmt.Printf("Connected to Redis Server"))
+	log.Info("Connected to Redis Server")
 }

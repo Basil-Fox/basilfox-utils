@@ -33,6 +33,6 @@ func Send(recipient string, subject string, bodyType string, body string) error 
 		return err
 	}
 
-	log.Info(fmt.Printf("Mail sent to %s successfully.", recipient))
+	log.Info(fmt.Sprintf("Mail sent to %s successfully.", recipient))
 	return nil
 }
