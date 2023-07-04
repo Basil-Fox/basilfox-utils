@@ -1,10 +1,11 @@
 package mail
 
 import (
-	"log"
+	"fmt"
 	"os"
 	"strconv"
 
+	"github.com/FiberApps/core/logger"
 	"gopkg.in/gomail.v2"
 )
 
@@ -16,6 +17,7 @@ func Send(recipient string, subject string, bodyType string, body string) error 
 		sender   = os.Getenv("SMTP_SENDER")
 		username = os.Getenv("SMTP_USERNAME")
 		password = os.Getenv("SMTP_PASSWORD")
+		log      = logger.NewLogger()
 	)
 
 	// Email configuration
@@ -31,6 +33,6 @@ func Send(recipient string, subject string, bodyType string, body string) error 
 		return err
 	}
 
-	log.Printf("Mail sent to %s successfully.", recipient)
+	log.Info(fmt.Printf("Mail sent to %s successfully.", recipient))
 	return nil
 }

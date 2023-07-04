@@ -1,8 +1,9 @@
 package kafka
 
 import (
-	"log"
+	"fmt"
 
+	"github.com/FiberApps/core/logger"
 	"github.com/Shopify/sarama"
 )
 
@@ -34,6 +35,7 @@ func createProducer(brokersUrl []string) (sarama.SyncProducer, error) {
 
 // Publisher
 func PublishMessage(kafkaBroker string, topic string, message []byte) error {
+	log := logger.NewLogger()
 	brokersUrl := []string{kafkaBroker}
 	producer, err := createProducer(brokersUrl)
 	if err != nil {
@@ -49,6 +51,6 @@ func PublishMessage(kafkaBroker string, topic string, message []byte) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", topic, partition, offset)
+	log.Info(fmt.Printf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", topic, partition, offset))
 	return nil
 }

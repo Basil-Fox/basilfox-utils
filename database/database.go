@@ -2,9 +2,10 @@ package database
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"time"
 
+	"github.com/FiberApps/core/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -12,6 +13,7 @@ import (
 var DB mongo.Database
 
 func Connect(url string, database string) {
+	log := logger.NewLogger()
 	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		log.Fatal(err)
@@ -22,7 +24,7 @@ func Connect(url string, database string) {
 		log.Fatal(err)
 	}
 
-	log.Printf("Connected to Database::[%s]", database)
+	log.Info(fmt.Printf("Connected to Database::[%s]", database))
 	DB = *client.Database(database)
 	defer cancel()
 }
