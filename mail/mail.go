@@ -1,7 +1,6 @@
 package mail
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 
@@ -33,6 +32,6 @@ func Send(recipient string, subject string, bodyType string, body string) error 
 		return err
 	}
 
-	log.Info(fmt.Sprintf("Mail sent to %s successfully.", recipient))
+	log.Info("MAIL_SENT::", recipient)
 	return nil
 }

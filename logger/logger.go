@@ -35,7 +35,11 @@ func New(config ...Config) *Logger {
 	}
 
 	// Customize the log format
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}).With().Str("request-id", cfg.RequestId).Logger()
+	if cfg.RequestId != "" {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}).With().Str("request-id", cfg.RequestId).Logger()
+	} else {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339})
+	}
 	return &Logger{}
 }
 

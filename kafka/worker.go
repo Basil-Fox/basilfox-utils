@@ -16,15 +16,15 @@ func AddWorker(broker string, topic string, handler KafkaWorker) {
 	log := logger.New()
 	worker, err := createConsumer([]string{broker})
 	if err != nil {
-		log.Error(fmt.Sprintf("[KafkaWorkerErr]::%s", err))
+		log.Error("KAFKA_WORKER_ERR -> CREATING_CONSUMER::", err)
 	}
 	// calling ConsumePartition. It will open one connection per broker
 	// and share it for all partitions that live on it.
 	consumer, err := worker.ConsumePartition(topic, 0, sarama.OffsetNewest)
 	if err != nil {
-		log.Error(fmt.Sprintf("[KafkaWorkerErr]::%s", err))
+		log.Error("KAFKA_WORKER_ERR -> CONSUMING_PARTITION::", err)
 	}
-	log.Info(fmt.Sprintf("[KafkaWorker]::Consumer started listening on topic:%s", topic))
+	log.Info("KAFKA_WORKER::Consumer started listening on topic:", topic)
 
 	doneCh := make(chan struct{})
 	sigChan := make(chan os.Signal, 1)
@@ -35,19 +35,19 @@ func AddWorker(broker string, topic string, handler KafkaWorker) {
 			select {
 			// Handle kafka errors
 			case err := <-consumer.Errors():
-				log.Error(fmt.Sprintf("[KafkaWorkerErr]::%s", err))
+				log.Error("KAFKA_WORKER_ERR -> CONSUMER_ERR::", err)
 
 			// Handle new message from kafka
 			case msg := <-consumer.Messages():
-				log.Info(fmt.Sprintf("[KafkaWorker]::Received: | Topic(%s) | Message(%s) \n", string(msg.Topic), string(msg.Value)))
+				log.Info(fmt.Sprintf("KAFKA_WORKER::Received: | Topic(%s) | Message(%s)", string(msg.Topic), string(msg.Value)))
 				if err := handler(msg); err != nil {
-					log.Error(fmt.Sprintf("[KafkaWorkerErr]::%s", err))
+					log.Error("KAFKA_WORKER_ERR -> HANDLING_INCOMING_MESSAGE::", err)
 					continue
 				}
 
 			// Handle termination signals
 			case <-sigChan:
-				log.Info("[KafkaWorker]::Interrupt is detected")
+				log.Info("KAFKA_WORKER::Interrupt is detected")
 				return
 			}
 		}
@@ -56,10 +56,10 @@ func AddWorker(broker string, topic string, handler KafkaWorker) {
 	<-doneCh
 
 	if err := consumer.Close(); err != nil {
-		log.Error(fmt.Sprintf("[KafkaWorkerErr]::%s", err))
+		log.Error("KAFKA_WORKER_ERR -> CLOSING_CONSUMER::", err)
 	}
 
 	if err := worker.Close(); err != nil {
-		log.Error(fmt.Sprintf("[KafkaWorkerErr]::%s", err))
+		log.Error("KAFKA_WORKER_ERR -> CLOSING_WORKER::", err)
 	}
 }

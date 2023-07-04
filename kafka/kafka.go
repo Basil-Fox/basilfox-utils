@@ -51,6 +51,6 @@ func PublishMessage(kafkaBroker string, topic string, message []byte) error {
 	if err != nil {
 		return err
 	}
-	log.Info(fmt.Sprintf("Message is stored in topic(%s)/partition(%d)/offset(%d)\n", topic, partition, offset))
+	log.Info(fmt.Sprintf("Message is stored in topic(%s)/partition(%d)/offset(%d)", topic, partition, offset))
 	return nil
 }

@@ -22,5 +22,5 @@ func Connect(uri string, user string, password string) {
 	if err != nil {
 		panic(err)
 	}
-	log.Info("Connected to Redis Server")
+	log.Info("CONNECTED_TO_REDIS")
 }

@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/FiberApps/core/logger"
@@ -16,15 +15,15 @@ func Connect(url string, database string) {
 	log := logger.New()
 	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("DATABASE_CONNECTION_ERR::", err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	if err = client.Connect(ctx); err != nil {
-		log.Fatal(err)
+		log.Fatal("DATABASE_CONNECTION_ERR::", err)
 	}
 
-	log.Info(fmt.Sprintf("Connected to Database::[%s]", database))
+	log.Info("CONNECTED_TO_DATABASE::", database)
 	DB = *client.Database(database)
 	defer cancel()
 }

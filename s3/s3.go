@@ -21,7 +21,7 @@ func SetupClient() {
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("S3_ERR -> LOADING_CONFIG::", err)
 	}
 
 	s3Client = s3.NewFromConfig(cfg)

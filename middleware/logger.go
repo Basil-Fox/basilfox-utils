@@ -19,7 +19,7 @@ func Logger(c *fiber.Ctx) error {
 	// handle request
 	err := c.Next()
 
-	msg := "REQUEST"
+	msg := "REQUEST_LOG::"
 	code := c.Response().StatusCode()
 
 	logger := log.With().
