@@ -4,12 +4,17 @@ import (
 	"time"
 
 	"github.com/FiberApps/core/constant"
+	"github.com/FiberApps/core/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 )
 
 func Logger(c *fiber.Ctx) error {
 	start := time.Now()
+	appLogger := logger.New(logger.Config{RequestId: c.Locals(constant.ContextRequestId).(string)})
+
+	// Add logger to locals
+	c.Locals(constant.ContextLogger, appLogger)
 
 	// handle request
 	err := c.Next()

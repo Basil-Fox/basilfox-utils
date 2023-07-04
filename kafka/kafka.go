@@ -35,7 +35,7 @@ func createProducer(brokersUrl []string) (sarama.SyncProducer, error) {
 
 // Publisher
 func PublishMessage(kafkaBroker string, topic string, message []byte) error {
-	log := logger.NewLogger()
+	log := logger.New()
 	brokersUrl := []string{kafkaBroker}
 	producer, err := createProducer(brokersUrl)
 	if err != nil {

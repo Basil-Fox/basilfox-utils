@@ -17,7 +17,7 @@ var s3Client *s3.Client
 // Setup S3 Client
 func SetupClient() {
 	region := os.Getenv("S3_REGION")
-	log := logger.NewLogger()
+	log := logger.New()
 
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
 	if err != nil {

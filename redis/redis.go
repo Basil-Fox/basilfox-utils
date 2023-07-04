@@ -10,7 +10,7 @@ import (
 var Client *redis.Client
 
 func Connect(uri string, user string, password string) {
-	log := logger.NewLogger()
+	log := logger.New()
 	Client = redis.NewClient(&redis.Options{
 		Addr:     uri,
 		Username: user,

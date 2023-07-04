@@ -13,7 +13,7 @@ import (
 type KafkaWorker func(*sarama.ConsumerMessage) error
 
 func AddWorker(broker string, topic string, handler KafkaWorker) {
-	log := logger.NewLogger()
+	log := logger.New()
 	worker, err := createConsumer([]string{broker})
 	if err != nil {
 		log.Error(fmt.Sprintf("[KafkaWorkerErr]::%s", err))
@@ -47,7 +47,7 @@ func AddWorker(broker string, topic string, handler KafkaWorker) {
 
 			// Handle termination signals
 			case <-sigChan:
-				log.Info(fmt.Println("[KafkaWorker]::Interrupt is detected"))
+				log.Info("[KafkaWorker]::Interrupt is detected")
 				return
 			}
 		}

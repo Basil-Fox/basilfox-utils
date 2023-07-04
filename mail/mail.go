@@ -17,7 +17,7 @@ func Send(recipient string, subject string, bodyType string, body string) error 
 		sender   = os.Getenv("SMTP_SENDER")
 		username = os.Getenv("SMTP_USERNAME")
 		password = os.Getenv("SMTP_PASSWORD")
-		log      = logger.NewLogger()
+		log      = logger.New()
 	)
 
 	// Email configuration

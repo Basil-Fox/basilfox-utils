@@ -12,9 +12,30 @@ import (
 
 type Logger struct{}
 
-func NewLogger() *Logger {
+type Config struct {
+	RequestId string
+}
+
+var ConfigDefault = Config{
+	RequestId: "",
+}
+
+func New(config ...Config) *Logger {
+	// Set default config
+	cfg := ConfigDefault
+
+	// Override config if provided
+	if len(config) > 0 {
+		cfg = config[0]
+
+		// Set default values
+		if cfg.RequestId == "" {
+			cfg.RequestId = ConfigDefault.RequestId
+		}
+	}
+
 	// Customize the log format
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339})
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}).With().Str("request-id", cfg.RequestId).Logger()
 	return &Logger{}
 }
 

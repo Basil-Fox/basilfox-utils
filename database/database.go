@@ -13,7 +13,7 @@ import (
 var DB mongo.Database
 
 func Connect(url string, database string) {
-	log := logger.NewLogger()
+	log := logger.New()
 	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		log.Fatal(err)

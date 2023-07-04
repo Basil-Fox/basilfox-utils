@@ -2,6 +2,7 @@ package constant
 
 const (
 	ContextJwtToken  = "jwt_token"
+	ContextLogger    = "logger"
 	ContextNamespace = "namespace"
 	ContextRequestId = "request_id"
 	ContextTokenId   = "token_id"
