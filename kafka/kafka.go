@@ -21,6 +21,7 @@ func getBaseConfig() ([]string, *sarama.Config) {
 	config.Net.SASL.User = kafkaUser
 	config.Net.SASL.Password = kafkaPassword
 	config.Net.SASL.Mechanism = sarama.SASLTypeSCRAMSHA256
+	config.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient { return &XDGSCRAMClient{HashGeneratorFcn: SHA256} }
 
 	return brokersUrl, config
 }
