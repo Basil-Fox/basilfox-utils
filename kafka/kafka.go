@@ -23,6 +23,9 @@ func getBaseConfig() ([]string, *sarama.Config) {
 	config.Net.SASL.Mechanism = sarama.SASLTypeSCRAMSHA256
 	config.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient { return &XDGSCRAMClient{HashGeneratorFcn: SHA256} }
 
+	log := logger.New()
+	log.Info(fmt.Sprintf("Created Kafka Client with user(%s)/password(%s)/broker(%s)", kafkaUser, kafkaPassword, brokersUrl))
+
 	return brokersUrl, config
 }
 
