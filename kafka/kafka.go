@@ -10,21 +10,11 @@ import (
 )
 
 func getBaseConfig() ([]string, *sarama.Config) {
-	kafkaUser := os.Getenv("KAFKA_USER")
-	kafkaPassword := os.Getenv("KAFKA_PASSWORD")
-	brokersList := os.Getenv("KAFKA_BROKERS_LIST")
+	brokersList := os.Getenv("KAFKA_BROKERS")
 	brokersUrl := strings.Split(brokersList, ",")
 
 	// Base config
 	config := sarama.NewConfig()
-	config.Net.SASL.Enable = true
-	config.Net.SASL.User = kafkaUser
-	config.Net.SASL.Password = kafkaPassword
-	config.Net.SASL.Mechanism = sarama.SASLTypeSCRAMSHA256
-	config.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient { return &XDGSCRAMClient{HashGeneratorFcn: SHA256} }
-
-	log := logger.New()
-	log.Info(fmt.Sprintf("Created Kafka Client with user(%s)/password(%s)/broker(%s)", kafkaUser, kafkaPassword, brokersUrl))
 
 	return brokersUrl, config
 }
