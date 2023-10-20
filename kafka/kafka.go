@@ -2,17 +2,37 @@ package kafka
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/FiberApps/core/logger"
 	"github.com/Shopify/sarama"
 )
 
-// Consumer
-func createConsumer(brokersUrl []string) (sarama.Consumer, error) {
+func getBaseConfig() ([]string, *sarama.Config) {
+	kafkaUser := os.Getenv("KAFKA_USER")
+	kafkaPassword := os.Getenv("KAFKA_PASSWORD")
+	brokersList := os.Getenv("KAFKA_BROKERS_LIST")
+	brokersUrl := strings.Split(brokersList, ",")
+
+	// Base config
 	config := sarama.NewConfig()
+	config.Net.SASL.Enable = true
+	config.Net.SASL.User = kafkaUser
+	config.Net.SASL.Password = kafkaPassword
+	config.Net.SASL.Mechanism = sarama.SASLTypeSCRAMSHA256
+
+	return brokersUrl, config
+}
+
+// Consumer
+func createConsumer() (sarama.Consumer, error) {
+	brokers, config := getBaseConfig()
+
+	// Additional Config
 	config.Consumer.Return.Errors = true
 
-	consumer, err := sarama.NewConsumer(brokersUrl, config)
+	consumer, err := sarama.NewConsumer(brokers, config)
 	if err != nil {
 		return nil, err
 	}
@@ -20,13 +40,15 @@ func createConsumer(brokersUrl []string) (sarama.Consumer, error) {
 }
 
 // Producer
-func createProducer(brokersUrl []string) (sarama.SyncProducer, error) {
-	config := sarama.NewConfig()
+func createProducer() (sarama.SyncProducer, error) {
+	brokers, config := getBaseConfig()
+
+	// Additional Config
 	config.Producer.Return.Successes = true
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	config.Producer.Retry.Max = 5
 
-	producer, err := sarama.NewSyncProducer(brokersUrl, config)
+	producer, err := sarama.NewSyncProducer(brokers, config)
 	if err != nil {
 		return nil, err
 	}
@@ -34,10 +56,9 @@ func createProducer(brokersUrl []string) (sarama.SyncProducer, error) {
 }
 
 // Publisher
-func PublishMessage(kafkaBroker string, topic string, message []byte) error {
+func PublishMessage(topic string, message []byte) error {
 	log := logger.New()
-	brokersUrl := []string{kafkaBroker}
-	producer, err := createProducer(brokersUrl)
+	producer, err := createProducer()
 	if err != nil {
 		return err
 	}

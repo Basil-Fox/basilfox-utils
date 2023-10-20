@@ -12,9 +12,9 @@ import (
 
 type KafkaWorker func(*sarama.ConsumerMessage) error
 
-func AddWorker(broker string, topic string, handler KafkaWorker) {
+func AddWorker(topic string, handler KafkaWorker) {
 	log := logger.New()
-	worker, err := createConsumer([]string{broker})
+	worker, err := createConsumer()
 	if err != nil {
 		log.Error("KAFKA_WORKER_ERR -> CREATING_CONSUMER::", err)
 	}
