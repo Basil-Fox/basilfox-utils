@@ -1,7 +1,7 @@
 package response
 
 import (
-	"github.com/FiberApps/core/constant"
+	"github.com/FiberApps/common-library/constant"
 	"github.com/gofiber/fiber/v2"
 )
 

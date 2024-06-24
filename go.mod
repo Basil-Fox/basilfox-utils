@@ -1,4 +1,4 @@
-module github.com/FiberApps/core
+module github.com/FiberApps/common-library
 
 go 1.20
 

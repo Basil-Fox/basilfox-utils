@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 
-	"github.com/FiberApps/core/logger"
+	"github.com/FiberApps/common-library/logger"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -20,7 +20,8 @@ func Connect(uri string, user string, password string) {
 
 	_, err := Client.Ping(context.Background()).Result()
 	if err != nil {
+		log.Error("REDIS:: Error while connecting: %v", err)
 		panic(err)
 	}
-	log.Info("CONNECTED_TO_REDIS")
+	log.Info("REDIS:: Connected")
 }

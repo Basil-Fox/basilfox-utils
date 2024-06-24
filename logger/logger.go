@@ -1,8 +1,6 @@
 package logger
 
 import (
-	"context"
-	"fmt"
 	"os"
 	"time"
 
@@ -43,30 +41,26 @@ func New(config ...Config) *Logger {
 	return &Logger{}
 }
 
-func (logger *Logger) Print(level zerolog.Level, args ...interface{}) {
-	log.WithLevel(level).Msg(fmt.Sprint(args...))
+func (logger *Logger) Printf(level zerolog.Level, format string, v ...interface{}) {
+	log.WithLevel(level).Msgf(format, v...)
 }
 
-func (logger *Logger) Printf(ctx context.Context, format string, v ...interface{}) {
-	log.WithLevel(zerolog.DebugLevel).Msgf(format, v...)
+func (logger *Logger) Debug(format string, v ...interface{}) {
+	logger.Printf(zerolog.DebugLevel, format, v...)
 }
 
-func (logger *Logger) Debug(args ...interface{}) {
-	logger.Print(zerolog.DebugLevel, args...)
+func (logger *Logger) Info(format string, v ...interface{}) {
+	logger.Printf(zerolog.InfoLevel, format, v...)
 }
 
-func (logger *Logger) Info(args ...interface{}) {
-	logger.Print(zerolog.InfoLevel, args...)
+func (logger *Logger) Warn(format string, v ...interface{}) {
+	logger.Printf(zerolog.WarnLevel, format, v...)
 }
 
-func (logger *Logger) Warn(args ...interface{}) {
-	logger.Print(zerolog.WarnLevel, args...)
+func (logger *Logger) Error(format string, v ...interface{}) {
+	logger.Printf(zerolog.ErrorLevel, format, v...)
 }
 
-func (logger *Logger) Error(args ...interface{}) {
-	logger.Print(zerolog.ErrorLevel, args...)
-}
-
-func (logger *Logger) Fatal(args ...interface{}) {
-	logger.Print(zerolog.FatalLevel, args...)
+func (logger *Logger) Fatal(format string, v ...interface{}) {
+	logger.Printf(zerolog.FatalLevel, format, v...)
 }

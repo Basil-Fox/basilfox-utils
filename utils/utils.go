@@ -1,19 +1,18 @@
 package utils
 
 import (
-	"os"
-
-	"github.com/FiberApps/core/logger"
+	"github.com/FiberApps/common-library/logger"
 	"github.com/joho/godotenv"
 )
 
-func LoadEnv() {
+func LoadEnv(env string) {
 	log := logger.New()
+
 	// Do not load .env in production
-	if os.Getenv("APP_ENV") != "production" {
+	if env != "production" {
 		err := godotenv.Load()
 		if err != nil {
-			log.Fatal("SERVER_INIT_FAILED::Error loading .env file")
+			log.Error("INIT:: Error loading .env file: %v", err)
 		}
 	}
 }

@@ -3,8 +3,8 @@ package middleware
 import (
 	"time"
 
-	"github.com/FiberApps/core/constant"
-	"github.com/FiberApps/core/logger"
+	"github.com/FiberApps/common-library/constant"
+	"github.com/FiberApps/common-library/logger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 )

@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/FiberApps/core/constant"
-	"github.com/FiberApps/core/response"
+	"github.com/FiberApps/common-library/constant"
+	"github.com/FiberApps/common-library/response"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
