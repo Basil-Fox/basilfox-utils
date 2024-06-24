@@ -7,7 +7,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-type MailClientConfig struct {
+type Config struct {
 	Host       string
 	Port       int
 	Username   string
@@ -16,10 +16,10 @@ type MailClientConfig struct {
 	SenderName string
 }
 
-var mConfig *MailClientConfig
+var mConfig *Config
 
 // Setup SMTP Client
-func SetupMailClient(config MailClientConfig) {
+func SetupClient(config Config) {
 	mConfig = &config
 }
 

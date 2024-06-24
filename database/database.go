@@ -13,6 +13,7 @@ var DB mongo.Database
 
 func Connect(url string, database string) {
 	log := logger.New()
+
 	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		log.Error("DATABASE:: Error creating new db client: %v", err)

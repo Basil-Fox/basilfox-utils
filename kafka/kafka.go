@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -9,14 +10,32 @@ import (
 	"github.com/Shopify/sarama"
 )
 
+type Config struct {
+	BrokerUrls []string
+}
+
+var kConfig *Config
+
+// Setup Kafka Client
+func SetupClient(config Config) {
+	kConfig = &config
+}
+
 // Consumer
-func createConsumer(brokersUrl []string) (sarama.Consumer, error) {
+func createConsumer() (sarama.Consumer, error) {
+	var log = logger.New()
+
+	if kConfig == nil {
+		log.Error("KAFKA:: Client isn't initialized yet")
+		return nil, fmt.Errorf("kafka client isn't initialized yet")
+	}
+
 	config := sarama.NewConfig()
 
 	// Additional Config
 	config.Consumer.Return.Errors = true
 
-	consumer, err := sarama.NewConsumer(brokersUrl, config)
+	consumer, err := sarama.NewConsumer(kConfig.BrokerUrls, config)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +43,14 @@ func createConsumer(brokersUrl []string) (sarama.Consumer, error) {
 }
 
 // Producer
-func createProducer(brokersUrl []string) (sarama.SyncProducer, error) {
+func createProducer() (sarama.SyncProducer, error) {
+	var log = logger.New()
+
+	if kConfig == nil {
+		log.Error("KAFKA:: Client isn't initialized yet")
+		return nil, fmt.Errorf("kafka client isn't initialized yet")
+	}
+
 	config := sarama.NewConfig()
 
 	// Additional Config
@@ -32,7 +58,7 @@ func createProducer(brokersUrl []string) (sarama.SyncProducer, error) {
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	config.Producer.Retry.Max = 5
 
-	producer, err := sarama.NewSyncProducer(brokersUrl, config)
+	producer, err := sarama.NewSyncProducer(kConfig.BrokerUrls, config)
 	if err != nil {
 		return nil, err
 	}
@@ -40,9 +66,9 @@ func createProducer(brokersUrl []string) (sarama.SyncProducer, error) {
 }
 
 // Publisher
-func PublishMessage(brokersUrl []string, topic string, message []byte) error {
+func PublishMessage(topic string, message []byte) error {
 	log := logger.New()
-	producer, err := createProducer(brokersUrl)
+	producer, err := createProducer()
 	if err != nil {
 		return err
 	}
@@ -62,11 +88,11 @@ func PublishMessage(brokersUrl []string, topic string, message []byte) error {
 }
 
 // Add worker
-func AddWorker(brokersUrl []string, topic string, handler KafkaWorker) {
+func AddWorker(topic string, handler KafkaWorker) {
 	log := logger.New()
 	logPrefix := "KAFKA_WORKER"
 
-	worker, err := createConsumer(brokersUrl)
+	worker, err := createConsumer()
 	if err != nil {
 		log.Error("%s:: Error creating consumer: %v", logPrefix, err)
 	}
