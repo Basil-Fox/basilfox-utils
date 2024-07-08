@@ -4,27 +4,30 @@ import (
 	"context"
 	"time"
 
-	"github.com/FiberApps/common-library/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var DB mongo.Database
 
-func Connect(url string, database string) {
-	log := logger.New()
-
+func Connect(url string, database string) error {
 	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
-		log.Error("DATABASE:: Error creating new db client: %v", err)
+		return err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	if err = client.Connect(ctx); err != nil {
-		log.Error("DATABASE:: Error obtaining context: %v", err)
+	defer cancel()
+
+	if err := client.Connect(ctx); err != nil {
+		return err
 	}
 
-	log.Info("DATABASE:: Connected to database: %s", database)
+	// Ping the MongoDB to verify connectivity
+	if err := client.Ping(ctx, nil); err != nil {
+		return err
+	}
+
 	DB = *client.Database(database)
-	defer cancel()
+	return nil
 }

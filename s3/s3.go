@@ -4,7 +4,6 @@ import (
 	"context"
 	"mime/multipart"
 
-	"github.com/FiberApps/common-library/logger"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
@@ -17,38 +16,37 @@ var (
 )
 
 // Setup S3 Client
-func SetupClient(region, bucket string) {
-	log := logger.New()
-
+func SetupClient(region, bucket string) error {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
 	if err != nil {
-		log.Error("AWS_S3:: Error while loading config: %v", err)
+		return err
 	}
 
 	s3Client = s3.NewFromConfig(cfg)
 	bucketName = bucket
+	return nil
 }
 
 // Upload file from multipart form
-func UploadFile(file *multipart.FileHeader) (string, error) {
-	log := logger.New()
-
-	fileReader, err := file.Open()
+func UploadFile(file *multipart.FileHeader, path string) (string, error) {
+	fileContent, err := file.Open()
 	if err != nil {
-		log.Error("AWS_S3:: Error while opening file: %v", err)
 		return "", err
+	}
+	defer fileContent.Close()
+
+	// Create put object input
+	putObjectInput := &s3.PutObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(path + file.Filename),
+		Body:   fileContent,
+		ACL:    "public-read",
 	}
 
 	uploader := manager.NewUploader(s3Client)
 
-	result, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(file.Filename),
-		Body:   fileReader,
-		ACL:    "public-read",
-	})
+	result, err := uploader.Upload(context.TODO(), putObjectInput)
 	if err != nil {
-		log.Error("AWS_S3:: Error while uploading file: %v", err)
 		return "", err
 	}
 

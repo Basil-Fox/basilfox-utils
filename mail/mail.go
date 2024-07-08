@@ -3,7 +3,7 @@ package mail
 import (
 	"fmt"
 
-	"github.com/FiberApps/common-library/logger"
+	"github.com/FiberApps/common-library/kafka"
 	"gopkg.in/gomail.v2"
 )
 
@@ -23,12 +23,8 @@ func SetupClient(config Config) {
 	mConfig = &config
 }
 
-func Send(recipient string, subject string, bodyType string, body string) error {
-
-	var log = logger.New()
-
+func Send(msg kafka.SendEmailMessage) error {
 	if mConfig == nil {
-		log.Error("MAIL_CLIENT:: Client isn't initialized yet")
 		return fmt.Errorf("mail client isn't initialized yet")
 	}
 
@@ -37,17 +33,15 @@ func Send(recipient string, subject string, bodyType string, body string) error 
 	from := fmt.Sprintf("%s <%s>", mConfig.SenderName, mConfig.Sender)
 
 	m.SetHeader("From", from)
-	m.SetHeader("To", recipient)
-	m.SetHeader("Subject", subject)
-	m.SetBody(bodyType, body)
+	m.SetHeader("To", msg.Recipient)
+	m.SetHeader("Subject", msg.Subject)
+	m.SetBody(msg.BodyType, msg.Body)
 
 	// Email sending
 	d := gomail.NewDialer(mConfig.Host, mConfig.Port, mConfig.Username, mConfig.Password)
 	if err := d.DialAndSend(m); err != nil {
-		log.Error("MAIL_SENT:: Error while sending mail: %v", err)
 		return err
 	}
 
-	log.Info("MAIL_SENT:: Sender(%s) Recipient(%s) Subject(%s)", mConfig.Sender, recipient, subject)
 	return nil
 }

@@ -23,10 +23,7 @@ func SetupClient(config Config) {
 
 // Consumer
 func createConsumer() (sarama.Consumer, error) {
-	var log = logger.New()
-
 	if kConfig == nil {
-		log.Error("KAFKA:: Client isn't initialized yet")
 		return nil, fmt.Errorf("kafka client isn't initialized yet")
 	}
 
@@ -44,10 +41,7 @@ func createConsumer() (sarama.Consumer, error) {
 
 // Producer
 func createProducer() (sarama.SyncProducer, error) {
-	var log = logger.New()
-
 	if kConfig == nil {
-		log.Error("KAFKA:: Client isn't initialized yet")
 		return nil, fmt.Errorf("kafka client isn't initialized yet")
 	}
 
@@ -83,24 +77,24 @@ func PublishMessage(topic string, message []byte) error {
 		return err
 	}
 
-	log.Info("Message published on topic(%s)/partition(%d)/offset(%d)", topic, partition, offset)
+	log.Info("KAFKA:: Message published on topic(%s)/partition(%d)/offset(%d)", topic, partition, offset)
 	return nil
 }
 
 // Add worker
-func AddWorker(topic string, handler KafkaWorker) {
+func AddWorker(topic string, handler KafkaWorker) error {
 	log := logger.New()
 	logPrefix := "KAFKA_WORKER"
 
 	worker, err := createConsumer()
 	if err != nil {
-		log.Error("%s:: Error creating consumer: %v", logPrefix, err)
+		return err
 	}
 	// calling ConsumePartition. It will open one connection per broker
 	// and share it for all partitions that live on it.
 	consumer, err := worker.ConsumePartition(topic, 0, sarama.OffsetNewest)
 	if err != nil {
-		log.Error("%s:: Error while consuming partition: %v", logPrefix, err)
+		return err
 	}
 
 	log.Info("%s:: Consumer started listening on topic(%s)", logPrefix, topic)
@@ -135,10 +129,12 @@ func AddWorker(topic string, handler KafkaWorker) {
 	<-doneCh
 
 	if err := consumer.Close(); err != nil {
-		log.Error("%s:: Error while destroying consumer: %v", logPrefix, err)
+		return err
 	}
 
 	if err := worker.Close(); err != nil {
-		log.Error("%s:: Error while destroying worker: %v", logPrefix, err)
+		return err
 	}
+
+	return nil
 }

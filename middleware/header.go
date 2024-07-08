@@ -7,16 +7,27 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func ValidateHeaders(endpointType string) func(c *fiber.Ctx) error {
+// Helper function to check if a string exists in a slice
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
+}
+
+func ValidateHeaders(endpointType string, namespaces []string) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 
 		// Check Namespace Header
-		if c.Get(constant.HeaderNamespace) == "" {
+		namespaceHeader := c.Get(constant.HeaderNamespace)
+		if namespaceHeader == "" || !contains(namespaces, namespaceHeader) {
 			return response.SendError(c, fiber.ErrBadGateway)
 		}
 
 		// Set namespace to locals
-		c.Locals(constant.ContextNamespace, c.Get(constant.HeaderNamespace))
+		c.Locals(constant.ContextNamespace, namespaceHeader)
 
 		if endpointType == constant.EndpointPrivate || endpointType == constant.EndpointRefresh {
 			// Check UserID Header
