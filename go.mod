@@ -1,6 +1,6 @@
 module github.com/FiberApps/common-library
 
-go 1.20
+go 1.23
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.18.1

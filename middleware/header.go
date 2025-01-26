@@ -28,14 +28,14 @@ func ValidateHeaders(endpointType string, namespaces []string) func(c *fiber.Ctx
 		// Set namespace to locals
 		c.Locals(constant.ContextNamespace, namespaceHeader)
 
-		// Check Firebase UserID Header for authenticated routes
+		// Check UserID Header for authenticated routes
 		if endpointType == constant.EndpointPrivate {
-			if c.Get(constant.HeaderFirebaseUserId) == "" {
+			if c.Get(constant.HeaderUserId) == "" {
 				return response.SendError(c, fiber.ErrUnauthorized)
 			}
 
-			// Set firebase_user_id to locals
-			c.Locals(constant.ContextFirebaseUserId, c.Get(constant.HeaderFirebaseUserId))
+			// Set user_id to locals
+			c.Locals(constant.ContextUserId, c.Get(constant.HeaderUserId))
 		}
 
 		return c.Next()

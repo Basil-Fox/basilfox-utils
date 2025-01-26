@@ -25,3 +25,22 @@ func VerifyIDToken(idToken string) (*auth.Token, error) {
 
 	return token, nil
 }
+
+func SetCustomTokenClaims(firebaseUID string, claims map[string]interface{}) error {
+	if app == nil {
+		return fmt.Errorf("firebase app isn't initialized yet")
+	}
+
+	ctx := context.Background()
+	client, err := app.Auth(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = client.SetCustomUserClaims(ctx, firebaseUID, claims)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
