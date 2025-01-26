@@ -4,32 +4,17 @@ import (
 	"context"
 	"fmt"
 
-	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
 	"github.com/FiberApps/common-library/kafka"
-	"google.golang.org/api/option"
 )
 
-var Client *firebase.App
-
-func InitApp(credentialsPath string) error {
-	opt := option.WithCredentialsFile(credentialsPath)
-	app, err := firebase.NewApp(context.Background(), nil, opt)
-	if err != nil {
-		return err
-	}
-
-	Client = app
-	return nil
-}
-
 func SendToTokens(msg kafka.SendPushNotificationMessage) error {
-	if Client == nil {
+	if app == nil {
 		return fmt.Errorf("firebase app isn't initialized yet")
 	}
 
 	ctx := context.Background()
-	client, err := Client.Messaging(ctx)
+	client, err := app.Messaging(ctx)
 	if err != nil {
 		return err
 	}
