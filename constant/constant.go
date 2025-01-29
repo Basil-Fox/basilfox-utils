@@ -14,5 +14,5 @@ const (
 	HeaderRequestId = "X-Request-ID"
 	HeaderUserId    = "X-User-ID"
 
-	TokenClaimUserID = "app_id"
+	TokenClaimUserID = "backend_uid"
 )
