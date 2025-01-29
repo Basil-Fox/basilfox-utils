@@ -4,6 +4,7 @@ import (
 	"github.com/FiberApps/common-library/constant"
 	"github.com/FiberApps/common-library/response"
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Helper function to check if a string exists in a slice
@@ -31,6 +32,12 @@ func ValidateHeaders(endpointType string, namespaces []string) func(c *fiber.Ctx
 		// Check UserID Header for authenticated routes
 		if endpointType == constant.EndpointPrivate {
 			if c.Get(constant.HeaderUserId) == "" {
+				return response.SendError(c, fiber.ErrUnauthorized)
+			}
+
+			// ObjectID validation
+			_, err := primitive.ObjectIDFromHex(c.Get(constant.HeaderUserId))
+			if err != nil {
 				return response.SendError(c, fiber.ErrUnauthorized)
 			}
 
