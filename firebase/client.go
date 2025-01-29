@@ -7,7 +7,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-var app *firebase.App
+var App *firebase.App
 
 func InitApp(credentialsPath string) error {
 	opt := option.WithCredentialsFile(credentialsPath)
@@ -16,6 +16,6 @@ func InitApp(credentialsPath string) error {
 		return err
 	}
 
-	app = _app
+	App = _app
 	return nil
 }

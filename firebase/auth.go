@@ -8,12 +8,12 @@ import (
 )
 
 func VerifyIDToken(idToken string) (*auth.Token, error) {
-	if app == nil {
+	if App == nil {
 		return nil, fmt.Errorf("firebase app isn't initialized yet")
 	}
 
 	ctx := context.Background()
-	client, err := app.Auth(ctx)
+	client, err := App.Auth(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -27,12 +27,12 @@ func VerifyIDToken(idToken string) (*auth.Token, error) {
 }
 
 func SetCustomTokenClaims(firebaseUID string, claims map[string]interface{}) error {
-	if app == nil {
+	if App == nil {
 		return fmt.Errorf("firebase app isn't initialized yet")
 	}
 
 	ctx := context.Background()
-	client, err := app.Auth(ctx)
+	client, err := App.Auth(ctx)
 	if err != nil {
 		return err
 	}

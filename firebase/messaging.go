@@ -9,12 +9,12 @@ import (
 )
 
 func SendToTokens(msg kafka.SendPushNotificationMessage) error {
-	if app == nil {
+	if App == nil {
 		return fmt.Errorf("firebase app isn't initialized yet")
 	}
 
 	ctx := context.Background()
-	client, err := app.Messaging(ctx)
+	client, err := App.Messaging(ctx)
 	if err != nil {
 		return err
 	}
