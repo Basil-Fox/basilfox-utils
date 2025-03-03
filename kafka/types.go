@@ -5,6 +5,7 @@ import "github.com/Shopify/sarama"
 const (
 	TopicLogout               = "logout"
 	TopicSendEmail            = "send_email"
+	TopicAccountLink          = "account_link"
 	TopicSendPushNotification = "send_push_notification"
 )
 
@@ -15,6 +16,11 @@ type KafkaWorker func(*ConsumerMessage) error
 type LogoutMessage struct {
 	TokenID  string
 	ExpireAt int64
+}
+
+type AccountLinkMessage struct {
+	UserID  string
+	GuestID string
 }
 
 type SendEmailMessage struct {
