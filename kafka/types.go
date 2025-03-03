@@ -6,6 +6,7 @@ const (
 	TopicLogout               = "logout"
 	TopicSendEmail            = "send_email"
 	TopicAccountLink          = "account_link"
+	TopicAccountLinkFinished  = "account_link_finished"
 	TopicSendPushNotification = "send_push_notification"
 )
 
@@ -19,8 +20,9 @@ type LogoutMessage struct {
 }
 
 type AccountLinkMessage struct {
-	UserID  string
-	GuestID string
+	UserID    string
+	GuestID   string
+	Namespace string
 }
 
 type SendEmailMessage struct {
