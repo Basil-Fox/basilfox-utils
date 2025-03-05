@@ -7,6 +7,7 @@ const (
 	TopicSendEmail            = "send_email"
 	TopicAccountLink          = "account_link"
 	TopicAccountLinkFinished  = "account_link_finished"
+	TopicAccountLinkFailed    = "account_link_failed"
 	TopicSendPushNotification = "send_push_notification"
 )
 
