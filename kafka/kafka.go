@@ -14,59 +14,46 @@ type Config struct {
 	BrokerUrls []string
 }
 
-var kConfig *Config
+var (
+	kConfig  *Config
+	producer sarama.SyncProducer // Global producer instance
+)
 
 // Setup Kafka Client
-func SetupClient(config Config) {
+func SetupClient(config Config) error {
+	if len(config.BrokerUrls) == 0 {
+		return fmt.Errorf("kafka broker URLs must be provided")
+	}
 	kConfig = &config
+	return nil
 }
 
-// Consumer
-func createConsumer() (sarama.Consumer, error) {
+// Initialize Kafka Producer (called once during startup)
+func InitProducer() error {
 	if kConfig == nil {
-		return nil, fmt.Errorf("kafka client isn't initialized yet")
+		return fmt.Errorf("kafka client isn't initialized yet")
 	}
 
 	config := sarama.NewConfig()
-
-	// Additional Config
-	config.Consumer.Return.Errors = true
-
-	consumer, err := sarama.NewConsumer(kConfig.BrokerUrls, config)
-	if err != nil {
-		return nil, err
-	}
-	return consumer, nil
-}
-
-// Producer
-func createProducer() (sarama.SyncProducer, error) {
-	if kConfig == nil {
-		return nil, fmt.Errorf("kafka client isn't initialized yet")
-	}
-
-	config := sarama.NewConfig()
-
-	// Additional Config
 	config.Producer.Return.Successes = true
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	config.Producer.Retry.Max = 5
 
-	producer, err := sarama.NewSyncProducer(kConfig.BrokerUrls, config)
-	if err != nil {
-		return nil, err
-	}
-	return producer, nil
-}
-
-// Publisher
-func PublishMessage(topic string, message []byte) error {
-	log := logger.New()
-	producer, err := createProducer()
+	var err error
+	producer, err = sarama.NewSyncProducer(kConfig.BrokerUrls, config)
 	if err != nil {
 		return err
 	}
-	defer producer.Close()
+	return nil
+}
+
+// Publish Message to Kafka
+func PublishMessage(topic string, message []byte) error {
+	log := logger.GetLogger().With().Str("kafka", "producer").Str("topic", topic).Logger()
+
+	if producer == nil {
+		return fmt.Errorf("kafka producer is not initialized")
+	}
 
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
@@ -77,63 +64,82 @@ func PublishMessage(topic string, message []byte) error {
 		return err
 	}
 
-	log.Info("KAFKA:: Message published on topic(%s)/partition(%d)/offset(%d)", topic, partition, offset)
+	log.Info().Int32("partition", partition).Int64("offset", offset).Msg("message published")
 	return nil
 }
 
-// Add worker
+// Create Kafka Consumer
+func createConsumer() (sarama.Consumer, error) {
+	if kConfig == nil {
+		return nil, fmt.Errorf("kafka client isn't initialized yet")
+	}
+
+	config := sarama.NewConfig()
+	config.Consumer.Return.Errors = true
+
+	consumer, err := sarama.NewConsumer(kConfig.BrokerUrls, config)
+	if err != nil {
+		return nil, err
+	}
+	return consumer, nil
+}
+
+// Add Kafka Worker to Process Messages from All Partitions
 func AddWorker(topic string, handler KafkaWorker) error {
-	log := logger.New()
-	logPrefix := "KAFKA_WORKER"
+	log := logger.GetLogger().With().Str("kafka", "consumer").Str("topic", topic).Logger()
 
-	worker, err := createConsumer()
-	if err != nil {
-		return err
-	}
-	// calling ConsumePartition. It will open one connection per broker
-	// and share it for all partitions that live on it.
-	consumer, err := worker.ConsumePartition(topic, 0, sarama.OffsetNewest)
+	consumer, err := createConsumer()
 	if err != nil {
 		return err
 	}
 
-	log.Info("%s:: Consumer started listening on topic(%s)", logPrefix, topic)
+	partitions, err := consumer.Partitions(topic)
+	if err != nil {
+		return err
+	}
 
-	doneCh := make(chan struct{})
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	go func() {
-		for {
-			select {
-			// Handle kafka errors
-			case err := <-consumer.Errors():
-				log.Error("%s:: Consumer error: %v", logPrefix, err)
+	doneCh := make(chan struct{})
 
-			// Handle new message from kafka
-			case msg := <-consumer.Messages():
-				log.Info("%s:: Message received on topic(%s)", logPrefix, string(msg.Topic))
-				if err := handler(msg); err != nil {
-					log.Error("%s:: Error while consuming message: %v", logPrefix, err)
-					continue
-				}
+	for _, partition := range partitions {
+		go func(partition int32) {
+			log.Info().Int32("partition", partition).Msg("starting consumer")
 
-			// Handle termination signals
-			case <-sigChan:
-				log.Info("%s:: Interrupt detected", logPrefix)
+			partitionConsumer, err := consumer.ConsumePartition(topic, partition, sarama.OffsetNewest)
+			if err != nil {
+				log.Error().AnErr("error", err).Int32("partition", partition).Msg("failed to consume from partition")
 				return
 			}
-		}
-	}()
+			defer partitionConsumer.Close()
 
-	<-doneCh
+			for {
+				select {
+				case err := <-partitionConsumer.Errors():
+					log.Error().AnErr("error", err).Int32("partition", partition).Msg("kafka consumer error")
 
-	if err := consumer.Close(); err != nil {
-		return err
+				case msg := <-partitionConsumer.Messages():
+					log.Debug().Int32("partition", partition).Int64("offset", msg.Offset).Msg("message received")
+
+					if err := handler(msg); err != nil {
+						log.Error().AnErr("error", err).Msg("failed to process message")
+					}
+
+				case <-sigChan:
+					log.Info().Int32("partition", partition).Msg("stopping consumer")
+					close(doneCh)
+					return
+				}
+			}
+		}(partition)
 	}
 
-	if err := worker.Close(); err != nil {
-		return err
+	<-doneCh // Wait for shutdown signal
+
+	log.Info().Msg("closing Kafka consumer")
+	if err := consumer.Close(); err != nil {
+		log.Error().AnErr("error", err).Msg("error closing Kafka consumer")
 	}
 
 	return nil

@@ -1,14 +1,12 @@
 package constant
 
+type EndpointType string
+
 const (
 	ContextTokenClaims = "token_claims"
-	ContextLogger      = "logger"
-	ContextNamespace   = "namespace"
-	ContextRequestId   = "request_id"
-	ContextUserId      = "user_id"
 
-	EndpointPublic  = "Public"
-	EndpointPrivate = "Private"
+	EndpointPublic  EndpointType = "Public"
+	EndpointPrivate EndpointType = "Private"
 
 	HeaderNamespace = "X-App-Namespace"
 	HeaderRequestId = "X-Request-ID"

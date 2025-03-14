@@ -8,30 +8,79 @@ import (
 	"github.com/FiberApps/common-library/kafka"
 )
 
-func SendToTokens(msg kafka.SendPushNotificationMessage) error {
-	if App == nil {
-		return fmt.Errorf("firebase app isn't initialized yet")
+// getMessagingClient safely retrieves the Firebase Messaging client.
+func GetMessagingClient() (*messaging.Client, error) {
+	app, err := GetApp()
+	if err != nil {
+		return nil, err
 	}
 
-	ctx := context.Background()
-	client, err := App.Messaging(ctx)
+	return app.Messaging(context.Background())
+}
+
+func SendToTokens(msg kafka.SendPushNotificationMessage, silent bool) error {
+	client, err := GetMessagingClient()
 	if err != nil {
 		return err
 	}
 
-	for _, token := range msg.Tokens {
-		message := &messaging.Message{
+	var message *messaging.MulticastMessage
+	if silent {
+		// Ensure the data map is initialized
+		if msg.Data == nil {
+			msg.Data = make(map[string]string)
+		}
+
+		// Add content-available for iOS silent notifications
+		msg.Data["content-available"] = "1"
+
+		// Prepare the silent notification (data-only)
+		message = &messaging.MulticastMessage{
+			Tokens: msg.Tokens,
+			Data:   msg.Data,
+			Android: &messaging.AndroidConfig{
+				Priority: "normal",
+			},
+			APNS: &messaging.APNSConfig{
+				Headers: map[string]string{
+					"apns-priority": "5",
+				},
+				Payload: &messaging.APNSPayload{
+					Aps: &messaging.Aps{
+						ContentAvailable: true,
+					},
+				},
+			},
+		}
+	} else {
+		// Prepare the normal notification
+		message = &messaging.MulticastMessage{
+			Tokens: msg.Tokens,
+			Data:   msg.Data,
 			Notification: &messaging.Notification{
 				Title: msg.Title,
 				Body:  msg.Body,
 			},
-			Data:  msg.Data,
-			Token: token,
+			Android: &messaging.AndroidConfig{
+				Priority: "high",
+			},
+			APNS: &messaging.APNSConfig{
+				Headers: map[string]string{
+					"apns-priority": "10",
+				},
+			},
 		}
+	}
 
-		if _, err := client.Send(ctx, message); err != nil {
-			return err
-		}
+	// Send the message to all tokens in a single batch
+	response, err := client.SendEachForMulticast(context.Background(), message)
+	if err != nil {
+		return fmt.Errorf("failed to send push notifications: %w", err)
+	}
+
+	// Check for failures
+	if response.FailureCount > 0 {
+		return fmt.Errorf("some notifications failed: %d/%d", response.FailureCount, len(msg.Tokens))
 	}
 
 	return nil
