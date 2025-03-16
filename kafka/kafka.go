@@ -109,7 +109,7 @@ func AddWorker(topic string, handler KafkaWorker) error {
 
 			partitionConsumer, err := consumer.ConsumePartition(topic, partition, sarama.OffsetNewest)
 			if err != nil {
-				log.Error().Err(err).Int32("partition", partition).Msg("failed to consume from partition")
+				log.Err(err).Int32("partition", partition).Msg("failed to consume from partition")
 				return
 			}
 			defer partitionConsumer.Close()
@@ -117,13 +117,13 @@ func AddWorker(topic string, handler KafkaWorker) error {
 			for {
 				select {
 				case err := <-partitionConsumer.Errors():
-					log.Error().Err(err).Int32("partition", partition).Msg("kafka consumer error")
+					log.Err(err).Int32("partition", partition).Msg("kafka consumer error")
 
 				case msg := <-partitionConsumer.Messages():
 					log.Debug().Int32("partition", partition).Int64("offset", msg.Offset).Msg("message received")
 
 					if err := handler(msg, &log); err != nil {
-						log.Error().Err(err).Msg("failed to process message")
+						log.Err(err).Msg("failed to process message")
 					}
 
 				case <-sigChan:
@@ -139,7 +139,7 @@ func AddWorker(topic string, handler KafkaWorker) error {
 
 	log.Info().Msg("closing Kafka consumer")
 	if err := consumer.Close(); err != nil {
-		log.Error().Err(err).Msg("error closing Kafka consumer")
+		log.Err(err).Msg("error closing Kafka consumer")
 	}
 
 	return nil
