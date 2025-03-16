@@ -1,6 +1,9 @@
 package kafka
 
-import "github.com/Shopify/sarama"
+import (
+	"github.com/Shopify/sarama"
+	"github.com/rs/zerolog"
+)
 
 const (
 	TopicLogout               = "logout"
@@ -13,7 +16,7 @@ const (
 
 type ConsumerMessage = sarama.ConsumerMessage
 
-type KafkaWorker func(*ConsumerMessage) error
+type KafkaWorker func(*ConsumerMessage, *zerolog.Logger) error
 
 type LogoutMessage struct {
 	TokenID  string

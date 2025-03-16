@@ -122,7 +122,7 @@ func AddWorker(topic string, handler KafkaWorker) error {
 				case msg := <-partitionConsumer.Messages():
 					log.Debug().Int32("partition", partition).Int64("offset", msg.Offset).Msg("message received")
 
-					if err := handler(msg); err != nil {
+					if err := handler(msg, &log); err != nil {
 						log.Error().Err(err).Msg("failed to process message")
 					}
 
