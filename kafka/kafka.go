@@ -19,31 +19,27 @@ var (
 	producer sarama.SyncProducer // Global producer instance
 )
 
-// Setup Kafka Client
+// Setup Kafka Client and Producer
 func SetupClient(config Config) error {
 	if len(config.BrokerUrls) == 0 {
 		return fmt.Errorf("kafka broker URLs must be provided")
 	}
+
+	// Initialize Kafka client config
 	kConfig = &config
-	return nil
-}
 
-// Initialize Kafka Producer (called once during startup)
-func InitProducer() error {
-	if kConfig == nil {
-		return fmt.Errorf("kafka client isn't initialized yet")
-	}
-
-	config := sarama.NewConfig()
-	config.Producer.Return.Successes = true
-	config.Producer.RequiredAcks = sarama.WaitForAll
-	config.Producer.Retry.Max = 5
+	// Initialize Kafka Producer
+	clientConfig := sarama.NewConfig()
+	clientConfig.Producer.Return.Successes = true
+	clientConfig.Producer.RequiredAcks = sarama.WaitForAll
+	clientConfig.Producer.Retry.Max = 5
 
 	var err error
-	producer, err = sarama.NewSyncProducer(kConfig.BrokerUrls, config)
+	producer, err = sarama.NewSyncProducer(kConfig.BrokerUrls, clientConfig)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to initialize Kafka producer: %w", err)
 	}
+
 	return nil
 }
 
