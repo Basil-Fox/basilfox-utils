@@ -12,8 +12,8 @@ func RequestID(c *fiber.Ctx) error {
 		return c.Next()
 	}
 
-	// Generate and Set new UUID
-	c.Set(constant.HeaderRequestId, utils.UUIDv4())
+	// Generate and Set new UUIDv4
+	c.Request().Header.Set(constant.HeaderRequestId, utils.UUIDv4())
 
 	return c.Next()
 }
