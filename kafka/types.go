@@ -18,25 +18,21 @@ type ConsumerMessage = sarama.ConsumerMessage
 
 type KafkaWorker func(*ConsumerMessage, *zerolog.Logger) error
 
-type KafkaMessage struct {
-	RequestID string
-}
-
 type LogoutMessage struct {
-	KafkaMessage
-	TokenID  string
-	ExpireAt int64
+	RequestID string
+	TokenID   string
+	ExpireAt  int64
 }
 
 type AccountLinkMessage struct {
-	KafkaMessage
+	RequestID string
 	UserID    string
 	GuestID   string
 	Namespace string
 }
 
 type SendEmailMessage struct {
-	KafkaMessage
+	RequestID string
 	Recipient string
 	Subject   string
 	BodyType  string
@@ -44,9 +40,9 @@ type SendEmailMessage struct {
 }
 
 type SendPushNotificationMessage struct {
-	KafkaMessage
-	Tokens []string
-	Title  string
-	Body   string
-	Data   map[string]string
+	RequestID string
+	Tokens    []string
+	Title     string
+	Body      string
+	Data      map[string]string
 }
