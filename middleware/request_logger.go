@@ -19,6 +19,29 @@ func RequestLogger(c *fiber.Ctx) error {
 	statusCode := c.Response().StatusCode()
 	latency := time.Since(start)
 
+	var clientIP string
+	var country string = "Unknown"
+
+	// Check if the request is coming through Cloudflare, get IP from CF-Connecting-IP header
+	if cfIP := c.Get("CF-Connecting-IP"); cfIP != "" {
+		clientIP = cfIP
+
+		// If Cloudflare is in use, get the country from the CF-IPCountry header
+		if cfCountry := c.Get("CF-IPCountry"); cfCountry != "" {
+			country = cfCountry
+		}
+	} else {
+		// If Cloudflare header is not found, check X-Forwarded-For
+		if xff := c.Get(fiber.HeaderXForwardedFor); xff != "" {
+			// The X-Forwarded-For header may contain a comma-separated list of IPs.
+			// The first IP is the real client IP.
+			clientIP = strings.Split(xff, ",")[0]
+		} else {
+			// Direct access or internal request, fallback to c.IP()
+			clientIP = c.IP()
+		}
+	}
+
 	// Build structured log entry
 	logEntry := logger.GetLogger().With().
 		Str("request_id", c.Get(constant.HeaderRequestId)).
@@ -26,7 +49,8 @@ func RequestLogger(c *fiber.Ctx) error {
 		Int("status", statusCode).
 		Str("method", c.Method()).
 		Str("path", c.Path()).
-		Str("ip", strings.Join(c.IPs(), ", ")).
+		Str("ip", clientIP).
+		Str("country", country).
 		Dur("latency", latency).
 		Str("user_agent", c.Get(fiber.HeaderUserAgent)).
 		Logger()
