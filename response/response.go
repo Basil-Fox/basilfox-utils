@@ -16,8 +16,8 @@ func SendError(ctx *fiber.Ctx, err *fiber.Error) error {
 
 // XXX - Error with Data
 func SendErrorWithData(ctx *fiber.Ctx, code int, err string) error {
-	log := logger.GetLogger()
-	log.Error().Str("request_id", ctx.Get(constant.HeaderRequestId)).Int("status_code", code).Str("error", err).Msg("error response")
+	log := logger.GetLogger(ctx)
+	log.Error().Int("status_code", code).Str("error", err).Msg("error response")
 
 	return ctx.Status(code).JSON(fiber.Map{
 		"Error":     err,
@@ -27,8 +27,8 @@ func SendErrorWithData(ctx *fiber.Ctx, code int, err string) error {
 
 // XXX - Error with Error
 func SendErrorWithError(ctx *fiber.Ctx, code int, err error) error {
-	log := logger.GetLogger()
-	log.Error().Str("request_id", ctx.Get(constant.HeaderRequestId)).Int("status_code", code).Str("error", err.Error()).Msg("error response")
+	log := logger.GetLogger(ctx)
+	log.Error().Int("status_code", code).Str("error", err.Error()).Msg("error response")
 
 	return ctx.Status(code).JSON(fiber.Map{
 		"Error":     err,

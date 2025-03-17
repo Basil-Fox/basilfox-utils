@@ -8,6 +8,7 @@ import (
 
 	"github.com/FiberApps/common-library/logger"
 	"github.com/Shopify/sarama"
+	"github.com/gofiber/fiber/v2"
 )
 
 type Config struct {
@@ -44,8 +45,8 @@ func SetupClient(config Config) error {
 }
 
 // Publish Message to Kafka
-func PublishMessage(topic string, message []byte) error {
-	log := logger.GetLogger().With().Str("kafka", "producer").Str("topic", topic).Logger()
+func PublishMessage(ctx *fiber.Ctx, topic string, message []byte) error {
+	log := logger.GetLogger(ctx).With().Str("kafka", "producer").Str("topic", topic).Logger()
 
 	if producer == nil {
 		return fmt.Errorf("kafka producer is not initialized")
@@ -82,7 +83,7 @@ func createConsumer() (sarama.Consumer, error) {
 
 // Add Kafka Worker to Process Messages from All Partitions
 func AddWorker(topic string, handler KafkaWorker) error {
-	log := logger.GetLogger().With().Str("kafka", "consumer").Str("topic", topic).Logger()
+	log := logger.GetLogger(nil).With().Str("kafka", "consumer").Str("topic", topic).Logger()
 
 	consumer, err := createConsumer()
 	if err != nil {

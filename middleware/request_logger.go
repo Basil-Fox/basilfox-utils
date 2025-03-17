@@ -43,8 +43,7 @@ func RequestLogger(c *fiber.Ctx) error {
 	}
 
 	// Build structured log entry
-	logEntry := logger.GetLogger().With().
-		Str("request_id", c.Get(constant.HeaderRequestId)).
+	logEntry := logger.GetLogger(c).With().
 		Str("namespace", c.Get(constant.HeaderNamespace)).
 		Int("status_code", statusCode).
 		Str("method", c.Method()).
