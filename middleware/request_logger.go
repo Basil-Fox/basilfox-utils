@@ -46,7 +46,7 @@ func RequestLogger(c *fiber.Ctx) error {
 	logEntry := logger.GetLogger().With().
 		Str("request_id", c.Get(constant.HeaderRequestId)).
 		Str("namespace", c.Get(constant.HeaderNamespace)).
-		Int("status", statusCode).
+		Int("status_code", statusCode).
 		Str("method", c.Method()).
 		Str("path", c.Path()).
 		Str("ip", clientIP).
