@@ -28,7 +28,7 @@ func SendErrorWithData(ctx *fiber.Ctx, code int, err string) error {
 // XXX - Error with Error
 func SendErrorWithError(ctx *fiber.Ctx, code int, err error) error {
 	log := logger.GetLogger(ctx)
-	log.Error().Int("status_code", code).Str("error", err.Error()).Msg("error response")
+	log.Err(err).Int("status_code", code).Msg("error response")
 
 	return ctx.Status(code).JSON(fiber.Map{
 		"Error":     err,
