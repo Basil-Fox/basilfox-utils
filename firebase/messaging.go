@@ -39,7 +39,7 @@ func SendToTokens(msg kafka.SendPushNotificationMessage, silent bool) error {
 			Tokens: msg.Tokens,
 			Data:   msg.Data,
 			Android: &messaging.AndroidConfig{
-				Priority: "normal",
+				Priority: "high",
 			},
 			APNS: &messaging.APNSConfig{
 				Headers: map[string]string{
@@ -63,10 +63,19 @@ func SendToTokens(msg kafka.SendPushNotificationMessage, silent bool) error {
 			},
 			Android: &messaging.AndroidConfig{
 				Priority: "high",
+				Notification: &messaging.AndroidNotification{
+					ChannelID: "default",
+					Sound:     "default",
+				},
 			},
 			APNS: &messaging.APNSConfig{
 				Headers: map[string]string{
 					"apns-priority": "10",
+				},
+				Payload: &messaging.APNSPayload{
+					Aps: &messaging.Aps{
+						Sound: "default",
+					},
 				},
 			},
 		}

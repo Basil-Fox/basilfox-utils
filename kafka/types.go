@@ -18,12 +18,6 @@ type ConsumerMessage = sarama.ConsumerMessage
 
 type KafkaWorker func(*ConsumerMessage, *zerolog.Logger) error
 
-type LogoutMessage struct {
-	RequestID string
-	TokenID   string
-	ExpireAt  int64
-}
-
 type AccountLinkMessage struct {
 	RequestID string
 	UserID    string
