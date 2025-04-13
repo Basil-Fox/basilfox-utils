@@ -1,7 +1,7 @@
 package response
 
 import (
-	"github.com/FiberApps/common-library/constant"
+	"github.com/FiberApps/common-library/constants/header"
 	"github.com/FiberApps/common-library/logger"
 	"github.com/gofiber/fiber/v2"
 )
@@ -10,7 +10,7 @@ import (
 func SendError(ctx *fiber.Ctx, err *fiber.Error) error {
 	return ctx.Status(err.Code).JSON(fiber.Map{
 		"Error":     err.Message,
-		"RequestID": ctx.Get(constant.HeaderRequestId),
+		"RequestID": ctx.Get(header.RequestID),
 	})
 }
 
@@ -21,7 +21,7 @@ func SendErrorWithData(ctx *fiber.Ctx, code int, err string) error {
 
 	return ctx.Status(code).JSON(fiber.Map{
 		"Error":     err,
-		"RequestID": ctx.Get(constant.HeaderRequestId),
+		"RequestID": ctx.Get(header.RequestID),
 	})
 }
 
@@ -32,7 +32,7 @@ func SendErrorWithError(ctx *fiber.Ctx, code int, err error) error {
 
 	return ctx.Status(code).JSON(fiber.Map{
 		"Error":     err,
-		"RequestID": ctx.Get(constant.HeaderRequestId),
+		"RequestID": ctx.Get(header.RequestID),
 	})
 }
 
@@ -40,6 +40,6 @@ func SendErrorWithError(ctx *fiber.Ctx, code int, err error) error {
 func Success(ctx *fiber.Ctx, data any) error {
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"Data":      data,
-		"RequestID": ctx.Get(constant.HeaderRequestId),
+		"RequestID": ctx.Get(header.RequestID),
 	})
 }

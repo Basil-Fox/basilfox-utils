@@ -4,54 +4,56 @@ import (
 	"strings"
 	"time"
 
-	"github.com/FiberApps/common-library/constant"
+	"github.com/FiberApps/common-library/constants/header"
 	"github.com/FiberApps/common-library/logger"
 	"github.com/gofiber/fiber/v2"
 )
 
-func RequestLogger(c *fiber.Ctx) error {
+func RequestLogger(ctx *fiber.Ctx) error {
 	start := time.Now()
 
 	// Handle request and capture any errors
-	err := c.Next()
+	err := ctx.Next()
 
 	// Extract response details
-	statusCode := c.Response().StatusCode()
+	statusCode := ctx.Response().StatusCode()
 	latency := time.Since(start)
 
 	var clientIP string
 	var country string = "Unknown"
 
 	// Check if the request is coming through Cloudflare, get IP from CF-Connecting-IP header
-	if cfIP := c.Get("CF-Connecting-IP"); cfIP != "" {
+	if cfIP := ctx.Get("CF-Connecting-IP"); cfIP != "" {
 		clientIP = cfIP
 
 		// If Cloudflare is in use, get the country from the CF-IPCountry header
-		if cfCountry := c.Get("CF-IPCountry"); cfCountry != "" {
+		if cfCountry := ctx.Get("CF-IPCountry"); cfCountry != "" {
 			country = cfCountry
 		}
 	} else {
 		// If Cloudflare header is not found, check X-Forwarded-For
-		if xff := c.Get(fiber.HeaderXForwardedFor); xff != "" {
+		if xff := ctx.Get(fiber.HeaderXForwardedFor); xff != "" {
 			// The X-Forwarded-For header may contain a comma-separated list of IPs.
 			// The first IP is the real client IP.
 			clientIP = strings.Split(xff, ",")[0]
 		} else {
-			// Direct access or internal request, fallback to c.IP()
-			clientIP = c.IP()
+			// Direct access or internal request, fallback to ctx.IP()
+			clientIP = ctx.IP()
 		}
 	}
 
 	// Build structured log entry
-	logEntry := logger.GetLogger(c).With().
-		Str("namespace", c.Get(constant.HeaderNamespace)).
+	logEntry := logger.GetLogger(ctx).With().
+		Str("namespace", ctx.Get(header.Namespace)).
+		Str("client_version", ctx.Get(header.AppVersion)).
+		Str("client_os", ctx.Get(header.DeviceOS)).
 		Int("status_code", statusCode).
-		Str("method", c.Method()).
-		Str("path", c.Path()).
+		Str("method", ctx.Method()).
+		Str("path", ctx.Path()).
 		Str("ip", clientIP).
 		Str("country", country).
 		Dur("latency", latency).
-		Str("user_agent", c.Get(fiber.HeaderUserAgent)).
+		Str("user_agent", ctx.Get(fiber.HeaderUserAgent)).
 		Logger()
 
 	// Log based on status code severity

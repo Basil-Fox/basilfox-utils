@@ -9,17 +9,17 @@ import (
 )
 
 // getMessagingClient safely retrieves the Firebase Messaging client.
-func GetMessagingClient() (*messaging.Client, error) {
+func GetMessagingClient(ctx context.Context) (*messaging.Client, error) {
 	app, err := GetApp()
 	if err != nil {
 		return nil, err
 	}
 
-	return app.Messaging(context.Background())
+	return app.Messaging(ctx)
 }
 
-func SendToTokens(msg kafka.SendPushNotificationMessage, silent bool) error {
-	client, err := GetMessagingClient()
+func SendToTokens(ctx context.Context, msg kafka.SendPushNotificationMessage, silent bool) error {
+	client, err := GetMessagingClient(ctx)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func SendToTokens(msg kafka.SendPushNotificationMessage, silent bool) error {
 	}
 
 	// Send the message to all tokens in a single batch
-	response, err := client.SendEachForMulticast(context.Background(), message)
+	response, err := client.SendEachForMulticast(ctx, message)
 	if err != nil {
 		return fmt.Errorf("failed to send push notifications: %w", err)
 	}

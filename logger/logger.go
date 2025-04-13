@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/FiberApps/common-library/constant"
+	"github.com/FiberApps/common-library/constants/header"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog"
 )
@@ -24,7 +24,7 @@ func InitLogger(appName, format string) {
 
 func GetLogger(ctx *fiber.Ctx) zerolog.Logger {
 	if ctx != nil {
-		return log.With().Str("request_id", ctx.Get(constant.HeaderRequestId)).Logger()
+		return log.With().Str("request_id", ctx.Get(header.RequestID)).Logger()
 	}
 	return log
 }

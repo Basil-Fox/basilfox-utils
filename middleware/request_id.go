@@ -1,19 +1,19 @@
 package middleware
 
 import (
-	"github.com/FiberApps/common-library/constant"
+	"github.com/FiberApps/common-library/constants/header"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 )
 
-func RequestID(c *fiber.Ctx) error {
+func RequestID(ctx *fiber.Ctx) error {
 	// Get Request ID from headers
-	if id := c.Get(constant.HeaderRequestId); id != "" {
-		return c.Next()
+	if id := ctx.Get(header.RequestID); id != "" {
+		return ctx.Next()
 	}
 
 	// Generate and Set new UUIDv4
-	c.Request().Header.Set(constant.HeaderRequestId, utils.UUIDv4())
+	ctx.Request().Header.Set(header.RequestID, utils.UUIDv4())
 
-	return c.Next()
+	return ctx.Next()
 }
