@@ -16,20 +16,20 @@ func ValidateHeaders(route config.RouteType, namespaces []string) func(c *fiber.
 		// Check namespace header is present and valid
 		namespace := ctx.Get(header.Namespace)
 		if namespace == "" || !slices.Contains(namespaces, namespace) {
-			return response.SendErrorWithData(ctx, fiber.StatusBadRequest, "Invalid namespace")
+			return response.SendNetworkError(ctx, fiber.ErrBadRequest)
 		}
 
 		// Check if UserID Header is present
 		if route == config.RoutePrivate {
 			userIdHex := ctx.Get(header.UserID)
 			if userIdHex == "" {
-				return response.SendErrorWithData(ctx, fiber.StatusUnauthorized, "Missing authentication context")
+				return response.SendErrorMessage(ctx, fiber.StatusUnauthorized, "Missing backend authentication context")
 			}
 
 			// Validate UserID Header
 			userID, err := primitive.ObjectIDFromHex(userIdHex)
 			if err != nil {
-				return response.SendErrorWithData(ctx, fiber.StatusBadRequest, "Invalid authentication context")
+				return response.SendErrorMessage(ctx, fiber.StatusBadRequest, "Invalid backend authentication context")
 			}
 
 			// Set UserID in context
@@ -40,7 +40,7 @@ func ValidateHeaders(route config.RouteType, namespaces []string) func(c *fiber.
 			// Check if FirebaseUID Header is present
 			firebaseUID := ctx.Get(header.FirebaseUID)
 			if firebaseUID == "" {
-				return response.SendErrorWithData(ctx, fiber.StatusUnauthorized, "Missing authentication context")
+				return response.SendErrorMessage(ctx, fiber.StatusUnauthorized, "Missing firebase authentication context")
 			}
 			// Set FirebaseUID in context
 			ctx.Locals(config.ContextFirebaseUID, firebaseUID)
