@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	"github.com/FiberApps/common-library/logger"
-	"github.com/Shopify/sarama"
+	"github.com/IBM/sarama"
 	"github.com/gofiber/fiber/v2"
 )
 
