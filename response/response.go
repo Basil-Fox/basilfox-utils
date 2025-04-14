@@ -23,7 +23,7 @@ func SendError(ctx *fiber.Ctx, code int, err error) error {
 	appLogger.Err(err).Int("status_code", code).Msg("error response")
 
 	return ctx.Status(code).JSON(fiber.Map{
-		"Error":     err,
+		"Error":     err.Error(),
 		"RequestID": ctx.Get(header.RequestID),
 	})
 }
