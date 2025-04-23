@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"firebase.google.com/go/v4/messaging"
-	"github.com/FiberApps/common-library/kafka"
+	"github.com/Basil-Fox/basilfox-utils/kafka"
 )
 
 // getMessagingClient safely retrieves the Firebase Messaging client.

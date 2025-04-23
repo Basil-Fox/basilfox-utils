@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/FiberApps/common-library/kafka"
+	"github.com/Basil-Fox/basilfox-utils/kafka"
 	"gopkg.in/gomail.v2"
 )
 

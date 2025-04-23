@@ -3,9 +3,9 @@ package middleware
 import (
 	"slices"
 
-	"github.com/FiberApps/common-library/constants/config"
-	"github.com/FiberApps/common-library/constants/header"
-	"github.com/FiberApps/common-library/response"
+	"github.com/Basil-Fox/basilfox-utils/constants/config"
+	"github.com/Basil-Fox/basilfox-utils/constants/header"
+	"github.com/Basil-Fox/basilfox-utils/response"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

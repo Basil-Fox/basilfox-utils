@@ -1,4 +1,4 @@
-module github.com/FiberApps/common-library
+module github.com/Basil-Fox/basilfox-utils
 
 go 1.24
 

@@ -6,13 +6,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/FiberApps/common-library/logger"
+	"github.com/Basil-Fox/basilfox-utils/logger"
 	"github.com/IBM/sarama"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Config struct {
 	BrokerUrls []string
+	// Add other config like SASL, TLS, Consumer Group ID etc. if needed
 }
 
 var (
@@ -46,7 +47,7 @@ func SetupClient(config Config) error {
 
 // Publish Message to Kafka
 func PublishMessage(ctx *fiber.Ctx, topic string, message []byte) error {
-	log := logger.GetLogger(ctx).With().Str("kafka", "producer").Str("topic", topic).Logger()
+	log := logger.GetLogger(ctx).With().Str("kafka_operation", "producer").Str("topic", topic).Logger()
 
 	if producer == nil {
 		return fmt.Errorf("kafka producer is not initialized")
@@ -54,14 +55,15 @@ func PublishMessage(ctx *fiber.Ctx, topic string, message []byte) error {
 
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
-		Value: sarama.StringEncoder(message),
+		Value: sarama.ByteEncoder(message),
 	}
+
 	partition, offset, err := producer.SendMessage(msg)
 	if err != nil {
 		return err
 	}
 
-	log.Info().Int32("partition", partition).Int64("offset", offset).Msg("message published")
+	log.Info().Int32("partition", partition).Int64("offset", offset).Msg("Message published successfully")
 	return nil
 }
 
@@ -73,6 +75,7 @@ func createConsumer() (sarama.Consumer, error) {
 
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
+	config.Consumer.Offsets.Initial = sarama.OffsetNewest
 
 	consumer, err := sarama.NewConsumer(kConfig.BrokerUrls, config)
 	if err != nil {
@@ -83,7 +86,7 @@ func createConsumer() (sarama.Consumer, error) {
 
 // Add Kafka Worker to Process Messages from All Partitions
 func AddWorker(topic string, handler KafkaWorker) error {
-	log := logger.GetLogger(nil).With().Str("kafka", "consumer").Str("topic", topic).Logger()
+	log := logger.GetLogger(nil).With().Str("kafka_operation", "consumer_worker").Str("topic", topic).Logger()
 
 	consumer, err := createConsumer()
 	if err != nil {

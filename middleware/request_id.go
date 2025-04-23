@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/FiberApps/common-library/constants/header"
+	"github.com/Basil-Fox/basilfox-utils/constants/header"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 )

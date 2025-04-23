@@ -1,10 +1,10 @@
-Here is a README file template for your **FiberApps Common Library** that you can use for your microservices:
+Here is a README file template for your **BasilFox Common Library** that you can use for your microservices:
 
 ---
 
-# FiberApps Common Library
+# BasilFox Common Library
 
-This repository contains the common utility library for microservices used across the **FiberApps** ecosystem. It includes reusable functions and modules to streamline tasks such as Firebase integration, Redis, S3 file uploads, database connections, push notifications, and more. The library is built using Go and designed to work seamlessly with the Fiber web framework.
+This repository contains the common utility library for microservices used across the **BasilFox** ecosystem. It includes reusable functions and modules to streamline tasks such as Firebase integration, Redis, S3 file uploads, database connections, push notifications, and more. The library is built using Go and designed to work seamlessly with the Fiber web framework.
 
 ## Features
 
@@ -18,10 +18,10 @@ This repository contains the common utility library for microservices used acros
 
 ## Installation
 
-To use the **FiberApps Common Library** in your own microservices, simply add it to your Go project as a module dependency.
+To use the **BasilFox Common Library** in your own microservices, simply add it to your Go project as a module dependency.
 
 ```bash
-go get github.com/FiberApps/common-library
+go get github.com/Basil-Fox/basilfox-utils
 ```
 
 Make sure you have Go modules enabled in your project by running `go mod init <module-name>` if it’s not already set up.
@@ -37,7 +37,7 @@ package firebase
 
 import (
 	"log"
-	"github.com/FiberApps/common-library/firebase"
+	"github.com/Basil-Fox/basilfox-utils/firebase"
 )
 
 func initFirebase() {
@@ -55,7 +55,7 @@ package firebase
 
 import (
 	"log"
-	"github.com/FiberApps/common-library/firebase"
+	"github.com/Basil-Fox/basilfox-utils/firebase"
 )
 
 func sendNotification() {
@@ -82,7 +82,7 @@ package redis
 
 import (
 	"log"
-	"github.com/FiberApps/common-library/redis"
+	"github.com/Basil-Fox/basilfox-utils/redis"
 )
 
 func initRedis() {
@@ -103,7 +103,7 @@ package s3
 import (
 	"log"
 	"mime/multipart"
-	"github.com/FiberApps/common-library/s3"
+	"github.com/Basil-Fox/basilfox-utils/s3"
 )
 
 func uploadFile(file *multipart.FileHeader) {
@@ -130,7 +130,7 @@ package database
 
 import (
 	"log"
-	"github.com/FiberApps/common-library/database"
+	"github.com/Basil-Fox/basilfox-utils/database"
 )
 
 func initDatabase() {
@@ -150,7 +150,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/FiberApps/common-library/middleware"
+	"github.com/Basil-Fox/basilfox-utils/middleware"
 )
 
 func main() {
