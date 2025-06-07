@@ -10,14 +10,18 @@ import (
 )
 
 var (
-	app *firebase.App
-	mu  sync.Mutex
+	apps = make(map[string]*firebase.App)
+	mu   sync.RWMutex
 )
 
 // InitWithFile initializes Firebase using a credentials file.
-func InitWithFile(credentialsPath string) error {
+func InitWithFile(namespace string, credentialsPath string) error {
 	mu.Lock()
 	defer mu.Unlock()
+
+	if _, exists := apps[namespace]; exists {
+		return nil // Already initialized
+	}
 
 	opt := option.WithCredentialsFile(credentialsPath)
 	_app, err := firebase.NewApp(context.Background(), nil, opt)
@@ -25,14 +29,18 @@ func InitWithFile(credentialsPath string) error {
 		return err
 	}
 
-	app = _app
+	apps[namespace] = _app
 	return nil
 }
 
 // InitWithJSON initializes Firebase using credentials JSON.
-func InitWithJSON(credentialsJSON []byte) error {
+func InitWithJSON(namespace string, credentialsJSON []byte) error {
 	mu.Lock()
 	defer mu.Unlock()
+
+	if _, exists := apps[namespace]; exists {
+		return nil // Already initialized
+	}
 
 	opt := option.WithCredentialsJSON(credentialsJSON)
 	_app, err := firebase.NewApp(context.Background(), nil, opt)
@@ -40,16 +48,17 @@ func InitWithJSON(credentialsJSON []byte) error {
 		return err
 	}
 
-	app = _app
+	apps[namespace] = _app
 	return nil
 }
 
 // GetApp returns the Firebase app instance or an error if not initialized.
-func GetApp() (*firebase.App, error) {
-	mu.Lock()
-	defer mu.Unlock()
+func GetApp(namespace string) (*firebase.App, error) {
+	mu.RLock()
+	defer mu.RUnlock()
 
-	if app == nil {
+	app, ok := apps[namespace]
+	if !ok {
 		return nil, errors.New("firebase app is not initialized")
 	}
 	return app, nil

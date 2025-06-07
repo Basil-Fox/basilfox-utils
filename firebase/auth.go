@@ -7,8 +7,8 @@ import (
 )
 
 // GetAuthClient safely retrieves the Firebase Auth client.
-func GetAuthClient(ctx context.Context) (*auth.Client, error) {
-	app, err := GetApp()
+func GetAuthClient(ctx context.Context, namespace string) (*auth.Client, error) {
+	app, err := GetApp(namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -17,8 +17,8 @@ func GetAuthClient(ctx context.Context) (*auth.Client, error) {
 }
 
 // VerifyIDToken verifies the given Firebase ID token and returns the decoded token.
-func VerifyIDToken(ctx context.Context, idToken string) (*auth.Token, error) {
-	client, err := GetAuthClient(ctx)
+func VerifyIDToken(ctx context.Context, namespace string, idToken string) (*auth.Token, error) {
+	client, err := GetAuthClient(ctx, namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -27,8 +27,8 @@ func VerifyIDToken(ctx context.Context, idToken string) (*auth.Token, error) {
 }
 
 // SetCustomTokenClaims sets custom claims for a Firebase user.
-func SetCustomTokenClaims(ctx context.Context, firebaseUID string, claims map[string]interface{}) error {
-	client, err := GetAuthClient(ctx)
+func SetCustomTokenClaims(ctx context.Context, namespace string, firebaseUID string, claims map[string]interface{}) error {
+	client, err := GetAuthClient(ctx, namespace)
 	if err != nil {
 		return err
 	}

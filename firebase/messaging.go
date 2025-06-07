@@ -9,8 +9,8 @@ import (
 )
 
 // getMessagingClient safely retrieves the Firebase Messaging client.
-func GetMessagingClient(ctx context.Context) (*messaging.Client, error) {
-	app, err := GetApp()
+func GetMessagingClient(ctx context.Context, namespace string) (*messaging.Client, error) {
+	app, err := GetApp(namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +19,7 @@ func GetMessagingClient(ctx context.Context) (*messaging.Client, error) {
 }
 
 func SendToTokens(ctx context.Context, msg kafka.SendPushNotificationMessage, silent bool) error {
-	client, err := GetMessagingClient(ctx)
+	client, err := GetMessagingClient(ctx, msg.Namespace)
 	if err != nil {
 		return err
 	}

@@ -20,13 +20,14 @@ type KafkaWorker func(*ConsumerMessage, *zerolog.Logger) error
 
 type AccountLinkMessage struct {
 	RequestID string
+	Namespace string
 	UserID    string
 	GuestID   string
-	Namespace string
 }
 
 type SendEmailMessage struct {
 	RequestID string
+	Namespace string
 	Recipient string
 	Subject   string
 	BodyType  string
@@ -35,6 +36,7 @@ type SendEmailMessage struct {
 
 type SendPushNotificationMessage struct {
 	RequestID string
+	Namespace string
 	Tokens    []string
 	Title     string
 	Body      string
